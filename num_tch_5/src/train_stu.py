@@ -24,6 +24,7 @@ teacher_1_model = None
 teacher_2_model = None
 teacher_3_model = None
 teacher_4_model = None
+teacher_5_model = None
 optimizer = None
 scheduler = None
 device = None
@@ -49,6 +50,7 @@ def train(ep, train_loader, model_save_path):
             teacher_2_preds = teacher_2_model(data)
             teacher_3_preds = teacher_3_model(data)
             teacher_4_preds = teacher_4_model(data)
+            teacher_5_preds = teacher_5_model(data)
 
         student_loss = F.binary_cross_entropy(sigmoid(student_preds), target, reduction='mean')
 
@@ -75,7 +77,12 @@ def train(ep, train_loader, model_save_path):
 
         distillation_loss_4 = soft_loss(x_s_p.log(), x_t4_p.log())
 
-        loss = alpha * student_loss + (1 - alpha) * (distillation_loss_1 + distillation_loss_2 + distillation_loss_3 + distillation_loss_4)
+        x_t5_sig = sigmoid(teacher_5_preds / Temperature).reshape(-1)
+        x_t5_p = torch.stack((x_t5_sig, 1 - x_t5_sig), dim=1)
+
+        distillation_loss_5 = soft_loss(x_s_p.log(), x_t5_p.log())
+
+        loss = alpha * student_loss + (1 - alpha) * (distillation_loss_1 + distillation_loss_2 + distillation_loss_3 + distillation_loss_4 + distillation_loss_5)
 
         optimizer.zero_grad()
         loss.backward()
@@ -101,7 +108,7 @@ def test(test_loader):
         test_loss /=  len(test_loader)
         return test_loss   
 
-def run_epoch(epochs, early_stop, loading, tch_1_model_save_path, tch_2_model_save_path, tch_3_model_save_path, tch_4_model_save_path, model_save_path, train_loader, test_loader, live):
+def run_epoch(epochs, early_stop, loading, tch_1_model_save_path, tch_2_model_save_path, tch_3_model_save_path, tch_4_model_save_path, tch_5_model_save_path, model_save_path, train_loader, test_loader, live):
     teacher_1_model.load_state_dict(torch.load(tch_1_model_save_path))
     print("-------------Teacher 1 Model Loaded------------")
     teacher_2_model.load_state_dict(torch.load(tch_2_model_save_path))
@@ -110,6 +117,8 @@ def run_epoch(epochs, early_stop, loading, tch_1_model_save_path, tch_2_model_sa
     print("-------------Teacher 3 Model Loaded------------")
     teacher_4_model.load_state_dict(torch.load(tch_4_model_save_path))
     print("-------------Teacher 4 Model Loaded------------")
+    teacher_5_model.load_state_dict(torch.load(tch_5_model_save_path))
+    print("-------------Teacher 5 Model Loaded------------")
 
     if loading==True:
         model.load_state_dict(torch.load(model_save_path))
@@ -150,18 +159,20 @@ def main():
     global teacher_2_model
     global teacher_3_model
     global teacher_4_model
+    global teacher_5_model
     global optimizer
     global scheduler
     global device
     global alpha
     global Temperature
 
-    params = dvc.api.params_show("f.yaml")
+    params = dvc.api.params_show("g.yaml")
 
     tch_1_option = params["teacher"]["model_1"]
     tch_2_option = params["teacher"]["model_2"]
     tch_3_option = params["teacher"]["model_3"]
     tch_4_option = params["teacher"]["model_4"]
+    tch_5_option = params["teacher"]["model_5"]
 
     stu_option = params["student"]["model"]
 
@@ -289,6 +300,33 @@ def main():
     # elif option == "m":
     #     teacher_model = tch_m
 
+    if tch_5_option == "d":
+        channels = params["model"][f"tch_{tch_5_option}"]["channels"]
+        teacher_5_model = DenseNetTeacher(num_classes, channels)
+    elif tch_5_option == "r":
+        dim = params["model"][f"tch_{tch_5_option}"]["dim"]
+        channels = params["model"][f"tch_{tch_5_option}"]["channels"]
+        teacher_5_model = resnet50(num_classes, channels)
+    elif tch_5_option == "v":
+        dim = params["model"][f"tch_{tch_5_option}"]["dim"]
+        depth = params["model"][f"tch_{tch_5_option}"]["depth"]
+        heads = params["model"][f"tch_{tch_5_option}"]["heads"]
+        mlp_dim = params["model"][f"tch_{tch_5_option}"]["mlp-dim"]
+        channels = params["model"][f"tch_{tch_5_option}"]["channels"]
+        teacher_5_model = TMAP(
+            image_size=image_size,
+            patch_size=patch_size,
+            num_classes=num_classes,
+            dim=dim,
+            depth=depth,
+            heads=heads,
+            mlp_dim=mlp_dim,
+            channels=channels,
+            dim_head=mlp_dim
+        )
+    # elif option == "m":
+    #     teacher_model = tch_m
+
     if stu_option == "d":
         channels = params["model"][f"stu_{stu_option}"]["channels"]
         model = DenseNetStudent(num_classes, channels)
@@ -324,6 +362,7 @@ def main():
     tch_2_model_save_path = os.path.join(model_dir, "teacher_2.pth")
     tch_3_model_save_path = os.path.join(model_dir, "teacher_3.pth")
     tch_4_model_save_path = os.path.join(model_dir, "teacher_4.pth")
+    tch_5_model_save_path = os.path.join(model_dir, "teacher_5.pth")
     
     model_save_path = os.path.join(model_dir, "student.pth")
 
@@ -335,6 +374,7 @@ def main():
     teacher_2_model = teacher_2_model.to(device)
     teacher_3_model = teacher_3_model.to(device)
     teacher_4_model = teacher_4_model.to(device)
+    teacher_5_model = teacher_5_model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=lr)
     scheduler = StepLR(optimizer, step_size=step_size, gamma=gamma)
@@ -343,7 +383,7 @@ def main():
 
     with Live(dir="res", resume=True) as live:
         live.step = 1
-        run_epoch(epochs, early_stop, loading, tch_1_model_save_path, tch_2_model_save_path, tch_3_model_save_path, tch_4_model_save_path, model_save_path, train_loader, test_loader, live)
+        run_epoch(epochs, early_stop, loading, tch_1_model_save_path, tch_2_model_save_path, tch_3_model_save_path, tch_4_model_save_path, tch_5_model_save_path, model_save_path, train_loader, test_loader, live)
 
 if __name__ == "__main__":
     main()

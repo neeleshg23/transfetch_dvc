@@ -1,0 +1,182 @@
+stages:
+  preprocess:
+    cmd: python src/preprocess.py
+    vars:
+      - d.yaml
+    deps:
+      - ${system.traces}/${apps.app}
+      - src/preprocess.py
+      - src/data_loader.py
+    params:
+      - d.yaml:
+        - system
+        - apps.app
+        - teacher.number
+        - trace-data
+        - hardware
+    outs:
+      - processed/train_loader_1
+      - processed/test_loader_1
+      - processed/test_df_1  
+      - processed/train_loader_2
+      - processed/test_loader_2
+      - processed/test_df_2
+      - processed/train_loader_stu
+      - processed/test_loader_stu
+      - processed/test_df_stu
+
+  train-tch-1:
+    cmd: python src/train_tch.py 1
+    vars:
+      - d.yaml    
+    deps:
+      - processed/train_loader_1
+      - processed/test_loader_1
+      - src/train_tch.py
+    params:
+      - d.yaml:  
+        - teacher.model_1
+        - model.tch_${teacher.model_1}
+        - system
+        - hardware
+        - train
+    metrics:
+      - res/plots/metrics/train_tch_1/test_loss.tsv:
+          cache: false
+      - res/plots/metrics/train_tch_1/train_loss.tsv:
+          cache: false
+    outs:
+      - model/teacher_1.pth
+
+  train-tch-2:
+    cmd: python src/train_tch.py 2
+    vars:
+      - d.yaml
+    deps:
+      - processed/train_loader_2
+      - processed/test_loader_2
+      - src/train_tch.py
+    params:
+      - d.yaml:  
+        - teacher.model_2
+        - model.tch_${teacher.model_2}
+        - system
+        - hardware
+        - train
+    metrics:
+      - res/plots/metrics/train_tch_2/test_loss.tsv:
+          cache: false
+      - res/plots/metrics/train_tch_2/train_loss.tsv:
+          cache: false
+    outs:
+      - model/teacher_2.pth
+
+  validate-tch-1:
+    cmd: python src/validate_tch.py 1
+    vars:
+      - d.yaml
+    deps:
+      - processed/test_loader_1
+      - processed/test_df_1
+      - model/teacher_1.pth
+      - src/validate_tch.py
+    params:
+      - d.yaml:
+        - teacher.model_1
+        - model.tch_${teacher.model_1}
+        - apps.app
+        - system
+        - hardware
+    metrics:
+      - res/teacher_1.json:
+          cache: false
+
+  validate-tch-2:
+    cmd: python src/validate_tch.py 2
+    vars:
+      - d.yaml
+    deps:
+      - processed/test_loader_2
+      - processed/test_df_2
+      - model/teacher_2.pth
+      - src/validate_tch.py
+    params:
+      - d.yaml:
+        - teacher.model_2
+        - model.tch_${teacher.model_2}
+        - apps.app
+        - system
+        - hardware
+    metrics:
+      - res/teacher_2.json:
+          cache: false
+
+  # train-stu:
+  #   cmd: python src/train_stu.py
+  #   vars:
+  #     - d.yaml
+  #   deps:
+  #     - model/teacher_1.pth
+  #     - model/teacher_2.pth
+  #     - processed/train_loader_stu
+  #     - processed/test_loader_stu
+  #     - src/train_stu.py
+  #   params:
+  #     - d.yaml:
+  #       - student.model
+  #       - model.stu_${student.model}
+  #       - teacher.model_1
+  #       - model.tch_${teacher.model_1}
+  #       - teacher.model_2
+  #       - model.tch_${teacher.model_2}
+  #       - system
+  #       - hardware
+  #       - train
+  #   metrics:
+  #     - res/plots/metrics/train_stu/test_loss.tsv:
+  #         cache: false
+  #     - res/plots/metrics/train_stu/train_loss.tsv:
+  #         cache: false
+  #   outs:
+  #     - model/student.pth
+
+  # validate-stu:
+  #   cmd: python src/validate_stu.py
+  #   vars:
+  #     - d.yaml
+  #   deps:
+  #     - processed/test_loader_stu
+  #     - processed/test_df_stu
+  #     - model/student.pth
+  #     - src/validate_stu.py
+  #   params:
+  #     - d.yaml:    
+  #       - student.model
+  #       - model.stu_${student.model}
+  #       - apps.app
+  #       - system
+  #       - hardware
+  #   metrics:
+  #     - res/student.json:
+  #         cache: false
+
+plots:
+  - train-tch-1:
+      y:
+        res/plots/metrics/train_tch_1/train_loss.tsv: train_tch_1/train_loss
+        res/plots/metrics/train_tch_1/test_loss.tsv: train_tch_1/test_loss
+      y_label: loss
+  - train-tch-2:
+      y:
+        res/plots/metrics/train_tch_2/train_loss.tsv: train_tch_2/train_loss
+        res/plots/metrics/train_tch_2/test_loss.tsv: train_tch_2/test_loss
+      y_label: loss
+  - train-stu:
+      y:
+        res/plots/metrics/train_stu/train_loss.tsv: train_stu/train_loss
+        res/plots/metrics/train_stu/test_loss.tsv: train_stu/test_loss
+      y_label: loss
+
+    
+
+

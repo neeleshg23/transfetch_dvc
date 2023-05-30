@@ -1,0 +1,607 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+    - path: ../data/473.astar-s0.txt.xz
+      md5: 65fb6bf0c8cf6d9877896b7dec09ac03
+      size: 5159136
+    - path: src/data_loader.py
+      md5: 5b012fd5e83fdc7404d80a84d6d77524
+      size: 1429
+    - path: src/preprocess.py
+      md5: a718b4813b9350d3b0c69d236a49169c
+      size: 8672
+    params:
+      f.yaml:
+        apps.app: 473.astar-s0.txt.xz
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+        teacher.number: 4
+        trace-data:
+          train: 20
+          total: 30
+          skip: 0
+          batch-size: 256
+    outs:
+    - path: processed/test_df_1
+      md5: 0a733707c4e524951fef27bc1b59a4a3
+      size: 45291635
+    - path: processed/test_df_2
+      md5: daa6abab9df274ad32f1fe6e125d0de3
+      size: 57787891
+    - path: processed/test_df_3
+      md5: 4a38f348a613578ae948c8d313c71ed9
+      size: 67845363
+    - path: processed/test_df_4
+      md5: 759d48e843be0f748228cb8589ac819e
+      size: 6814131
+    - path: processed/test_df_stu
+      md5: e40da7c124b74805810f09a485120ef2
+      size: 150565431
+    - path: processed/test_loader_1
+      md5: 0a5c421e7af593a2248e50a41dd81b5b
+      size: 50046203
+    - path: processed/test_loader_2
+      md5: 2dc04a560ba3474ccf78f658c45cabb3
+      size: 63848187
+    - path: processed/test_loader_3
+      md5: ad40b8546efc1e0e90133486c4cc7e80
+      size: 74945275
+    - path: processed/test_loader_4
+      md5: 232fc88f3198569032f64ce2da305935
+      size: 7528827
+    - path: processed/test_loader_stu
+      md5: 92c85ce731d9e429a85a0ae49db1d099
+      size: 166340095
+    - path: processed/train_loader_1
+      md5: 47b7dd0fc241efd815c99bd3a3b21190
+      size: 156283453
+    - path: processed/train_loader_2
+      md5: 5651e9b26994f2d8ac38fce3b300644d
+      size: 114736765
+    - path: processed/train_loader_3
+      md5: 2a06b06ee22d2ea1ea8f22906549380e
+      size: 135974717
+    - path: processed/train_loader_4
+      md5: 3fe661982abf812d3ec72453eae59960
+      size: 80570173
+    - path: processed/train_loader_stu
+      md5: 38d0df3d4e7acf1b7fb3ab147056022e
+      size: 526124481
+  train-tch-1:
+    cmd: python src/train_tch.py 1
+    deps:
+    - path: processed/test_loader_1
+      md5: 0a5c421e7af593a2248e50a41dd81b5b
+      size: 50046203
+    - path: processed/train_loader_1
+      md5: 47b7dd0fc241efd815c99bd3a3b21190
+      size: 156283453
+    - path: src/train_tch.py
+      md5: 140ae8010af98272d46cf6a3515f4c0d
+      size: 5316
+    params:
+      f.yaml:
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        model.tch_v:
+          dim: 256
+          depth: 8
+          heads: 10
+          mlp-dim: 256
+          channels: 1
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+        teacher.model_1: v
+        train:
+          epochs: 50
+          lr: 0.0002
+          gamma: 0.1
+          step-size: 20
+          early-stop: 10
+          alpha: 0.5
+          temperature: 5
+    outs:
+    - path: model/teacher_1.pth
+      md5: ba2a66909919f5bd9cf5da6622905008
+      size: 88465545
+    - path: res/plots/metrics/train_tch_1/test_loss.tsv
+      md5: 292a95ba743e3065d6c150111e02a388
+      size: 925
+    - path: res/plots/metrics/train_tch_1/train_loss.tsv
+      md5: 6cd729220dca077129c9f33f4dd3102d
+      size: 932
+  train-tch-2:
+    cmd: python src/train_tch.py 2
+    deps:
+    - path: processed/test_loader_2
+      md5: 2dc04a560ba3474ccf78f658c45cabb3
+      size: 63848187
+    - path: processed/train_loader_2
+      md5: 5651e9b26994f2d8ac38fce3b300644d
+      size: 114736765
+    - path: src/train_tch.py
+      md5: 140ae8010af98272d46cf6a3515f4c0d
+      size: 5316
+    params:
+      f.yaml:
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        model.tch_v:
+          dim: 256
+          depth: 8
+          heads: 10
+          mlp-dim: 256
+          channels: 1
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+        teacher.model_2: v
+        train:
+          epochs: 50
+          lr: 0.0002
+          gamma: 0.1
+          step-size: 20
+          early-stop: 10
+          alpha: 0.5
+          temperature: 5
+    outs:
+    - path: model/teacher_2.pth
+      md5: e332f786d66d017f2e670b757abeebdf
+      size: 88465545
+    - path: res/plots/metrics/train_tch_2/test_loss.tsv
+      md5: 31492f677b2b7941a799480521cf9a0b
+      size: 1021
+    - path: res/plots/metrics/train_tch_2/train_loss.tsv
+      md5: 3153eb6554207da06758bdc524497b70
+      size: 1024
+  train-tch-3:
+    cmd: python src/train_tch.py 3
+    deps:
+    - path: processed/test_loader_3
+      md5: ad40b8546efc1e0e90133486c4cc7e80
+      size: 74945275
+    - path: processed/train_loader_3
+      md5: 2a06b06ee22d2ea1ea8f22906549380e
+      size: 135974717
+    - path: src/train_tch.py
+      md5: 140ae8010af98272d46cf6a3515f4c0d
+      size: 5316
+    params:
+      f.yaml:
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        model.tch_v:
+          dim: 256
+          depth: 8
+          heads: 10
+          mlp-dim: 256
+          channels: 1
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+        teacher.model_3: v
+        train:
+          epochs: 50
+          lr: 0.0002
+          gamma: 0.1
+          step-size: 20
+          early-stop: 10
+          alpha: 0.5
+          temperature: 5
+    outs:
+    - path: model/teacher_3.pth
+      md5: d7be69d47f65c16d2e13c2449e66a505
+      size: 88465545
+    - path: res/plots/metrics/train_tch_3/test_loss.tsv
+      md5: 8a4ca7975649fa02eafa340c0f90e383
+      size: 933
+    - path: res/plots/metrics/train_tch_3/train_loss.tsv
+      md5: 130d7a7f0d8e9996b55c2fa225231ec4
+      size: 928
+  train-tch-4:
+    cmd: python src/train_tch.py 4
+    deps:
+    - path: processed/test_loader_4
+      md5: 232fc88f3198569032f64ce2da305935
+      size: 7528827
+    - path: processed/train_loader_4
+      md5: 3fe661982abf812d3ec72453eae59960
+      size: 80570173
+    - path: src/train_tch.py
+      md5: 140ae8010af98272d46cf6a3515f4c0d
+      size: 5316
+    params:
+      f.yaml:
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        model.tch_v:
+          dim: 256
+          depth: 8
+          heads: 10
+          mlp-dim: 256
+          channels: 1
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+        teacher.model_4: v
+        train:
+          epochs: 50
+          lr: 0.0002
+          gamma: 0.1
+          step-size: 20
+          early-stop: 10
+          alpha: 0.5
+          temperature: 5
+    outs:
+    - path: model/teacher_4.pth
+      md5: aaad6e5265c6a461394e9c2800cc1500
+      size: 88465545
+    - path: res/plots/metrics/train_tch_4/test_loss.tsv
+      md5: c13988129b40d18c13a2d6131aa728e9
+      size: 1175
+    - path: res/plots/metrics/train_tch_4/train_loss.tsv
+      md5: 4c9862133ce66f49754692e3d22015f3
+      size: 1156
+  train-stu:
+    cmd: python src/train_stu.py
+    deps:
+    - path: model/teacher_1.pth
+      md5: ba2a66909919f5bd9cf5da6622905008
+      size: 88465545
+    - path: model/teacher_2.pth
+      md5: e332f786d66d017f2e670b757abeebdf
+      size: 88465545
+    - path: model/teacher_3.pth
+      md5: d7be69d47f65c16d2e13c2449e66a505
+      size: 88465545
+    - path: model/teacher_4.pth
+      md5: aaad6e5265c6a461394e9c2800cc1500
+      size: 88465545
+    - path: processed/test_loader_stu
+      md5: 92c85ce731d9e429a85a0ae49db1d099
+      size: 166340095
+    - path: processed/train_loader_stu
+      md5: 38d0df3d4e7acf1b7fb3ab147056022e
+      size: 526124481
+    - path: src/train_stu.py
+      md5: 6bdd2adc63153fa4dc4eb6f293964938
+      size: 12938
+    params:
+      f.yaml:
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        model.stu_v:
+          dim: 16
+          depth: 2
+          heads: 2
+          mlp-dim: 16
+          channels: 1
+        model.tch_v:
+          dim: 256
+          depth: 8
+          heads: 10
+          mlp-dim: 256
+          channels: 1
+        student.model: v
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+        teacher.model_1: v
+        teacher.model_2: v
+        teacher.model_3: v
+        teacher.model_4: v
+        train:
+          epochs: 50
+          lr: 0.0002
+          gamma: 0.1
+          step-size: 20
+          early-stop: 10
+          alpha: 0.5
+          temperature: 5
+    outs:
+    - path: model/student.pth
+      md5: 1dfe81546100bca15dfd24f142cf358d
+      size: 51403
+    - path: res/plots/metrics/train_stu/test_loss.tsv
+      md5: 97b6a833dadd0e3bcde5293c4249ccb5
+      size: 874
+    - path: res/plots/metrics/train_stu/train_loss.tsv
+      md5: a52c3cafa958ed9a542fcb3326eafa66
+      size: 887
+  validate-stu:
+    cmd: python src/validate_stu.py
+    deps:
+    - path: model/student.pth
+      md5: 1dfe81546100bca15dfd24f142cf358d
+      size: 51403
+    - path: processed/test_df_stu
+      md5: e40da7c124b74805810f09a485120ef2
+      size: 150565431
+    - path: processed/test_loader_stu
+      md5: 92c85ce731d9e429a85a0ae49db1d099
+      size: 166340095
+    - path: src/validate_stu.py
+      md5: bb0cace266b3bcc1e3a44f77c6db312f
+      size: 7406
+    params:
+      f.yaml:
+        apps.app: 473.astar-s0.txt.xz
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        model.stu_v:
+          dim: 16
+          depth: 2
+          heads: 2
+          mlp-dim: 16
+          channels: 1
+        student.model: v
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+    outs:
+    - path: res/student.json
+      md5: 1956c649225129df6e4bc460f5903458
+      size: 228
+  validate-tch-1:
+    cmd: python src/validate_tch.py 1
+    deps:
+    - path: model/teacher_1.pth
+      md5: ba2a66909919f5bd9cf5da6622905008
+      size: 88465545
+    - path: processed/test_df_1
+      md5: 0a733707c4e524951fef27bc1b59a4a3
+      size: 45291635
+    - path: processed/test_loader_1
+      md5: 0a5c421e7af593a2248e50a41dd81b5b
+      size: 50046203
+    - path: src/validate_tch.py
+      md5: 80dd3a175c074fc13ad0258a303ca15d
+      size: 7647
+    params:
+      f.yaml:
+        apps.app: 473.astar-s0.txt.xz
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        model.tch_v:
+          dim: 256
+          depth: 8
+          heads: 10
+          mlp-dim: 256
+          channels: 1
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+        teacher.model_1: v
+    outs:
+    - path: res/teacher_1.json
+      md5: c1a0b1afe03748c6f7f4cf31297c0d08
+      size: 229
+  validate-tch-2:
+    cmd: python src/validate_tch.py 2
+    deps:
+    - path: model/teacher_2.pth
+      md5: e332f786d66d017f2e670b757abeebdf
+      size: 88465545
+    - path: processed/test_df_2
+      md5: daa6abab9df274ad32f1fe6e125d0de3
+      size: 57787891
+    - path: processed/test_loader_2
+      md5: 2dc04a560ba3474ccf78f658c45cabb3
+      size: 63848187
+    - path: src/validate_tch.py
+      md5: 80dd3a175c074fc13ad0258a303ca15d
+      size: 7647
+    params:
+      f.yaml:
+        apps.app: 473.astar-s0.txt.xz
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        model.tch_v:
+          dim: 256
+          depth: 8
+          heads: 10
+          mlp-dim: 256
+          channels: 1
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+        teacher.model_2: v
+    outs:
+    - path: res/teacher_2.json
+      md5: 2cb86fe890a6088290d57be45ebe6d99
+      size: 228
+  validate-tch-3:
+    cmd: python src/validate_tch.py 3
+    deps:
+    - path: model/teacher_3.pth
+      md5: d7be69d47f65c16d2e13c2449e66a505
+      size: 88465545
+    - path: processed/test_df_3
+      md5: 4a38f348a613578ae948c8d313c71ed9
+      size: 67845363
+    - path: processed/test_loader_3
+      md5: ad40b8546efc1e0e90133486c4cc7e80
+      size: 74945275
+    - path: src/validate_tch.py
+      md5: 80dd3a175c074fc13ad0258a303ca15d
+      size: 7647
+    params:
+      f.yaml:
+        apps.app: 473.astar-s0.txt.xz
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        model.tch_v:
+          dim: 256
+          depth: 8
+          heads: 10
+          mlp-dim: 256
+          channels: 1
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+        teacher.model_3: v
+    outs:
+    - path: res/teacher_3.json
+      md5: d4de4a9cdcc574a02070d16f7f4665e8
+      size: 227
+  validate-tch-4:
+    cmd: python src/validate_tch.py 4
+    deps:
+    - path: model/teacher_4.pth
+      md5: aaad6e5265c6a461394e9c2800cc1500
+      size: 88465545
+    - path: processed/test_df_4
+      md5: 759d48e843be0f748228cb8589ac819e
+      size: 6814131
+    - path: processed/test_loader_4
+      md5: 232fc88f3198569032f64ce2da305935
+      size: 7528827
+    - path: src/validate_tch.py
+      md5: 80dd3a175c074fc13ad0258a303ca15d
+      size: 7647
+    params:
+      f.yaml:
+        apps.app: 473.astar-s0.txt.xz
+        hardware:
+          block-bits: 6
+          total-bits: 64
+          look-back: 9
+          pred-forward: 128
+          page-bits: 12
+          delta-bound: 128
+          split-bits: 6
+          filter-size: 16
+          bitmap-size: 256
+          block-num-bits: 58
+        model.tch_v:
+          dim: 256
+          depth: 8
+          heads: 10
+          mlp-dim: 256
+          channels: 1
+        system:
+          gpu-id: 0
+          traces: ../data
+          processed: processed
+          model: model
+        teacher.model_4: v
+    outs:
+    - path: res/teacher_4.json
+      md5: 2100dc1fd1ca03406f860435feec58f2
+      size: 219

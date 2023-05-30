@@ -325,7 +325,7 @@ stages:
       md5: 38d0df3d4e7acf1b7fb3ab147056022e
       size: 526124481
     - path: src/train_stu.py
-      md5: 6bdd2adc63153fa4dc4eb6f293964938
+      md5: 5af741ae567e90716371afbb6c9cfdf7
       size: 12938
     params:
       f.yaml:

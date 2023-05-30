@@ -9,9 +9,11 @@ stages:
     - path: src/data_loader.py
       md5: 8f6ec379f613e14a0bc6fe5729e5924a
       size: 1429
+      isexec: true
     - path: src/preprocess.py
       md5: 60217f9e3b6c2471555053c9573ac9d0
       size: 8672
+      isexec: true
     params:
       e.yaml:
         apps.app: 473.astar-s0.txt.xz
@@ -86,6 +88,7 @@ stages:
     - path: src/train_tch.py
       md5: b0b89c333ef34e301692bba394622538
       size: 5316
+      isexec: true
     params:
       e.yaml:
         hardware:

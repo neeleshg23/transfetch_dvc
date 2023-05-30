@@ -3,9 +3,9 @@ stages:
   preprocess:
     cmd: python src/preprocess.py
     deps:
-    - path: ../data/473.astar-s0.txt.xz
-      md5: 65fb6bf0c8cf6d9877896b7dec09ac03
-      size: 5159136
+    - path: ../data/473.astar-s1.txt.xz
+      md5: fc15414dd9ef7e04f2fda20bd459cef2
+      size: 31279168
     - path: src/data_loader.py
       md5: a07df26caaf9ba914af24c47550e0766
       size: 1429
@@ -14,7 +14,7 @@ stages:
       size: 7751
     params:
       c.yaml:
-        apps.app: 473.astar-s0.txt.xz
+        apps.app: 473.astar-s1.txt.xz
         hardware:
           block-bits: 6
           total-bits: 64
@@ -59,6 +59,7 @@ stages:
     - path: src/train_tch.py
       md5: 16caa17374d64ce45b28af239c2352a2
       size: 5109
+      isexec: true
     params:
       c.yaml:
         hardware:
@@ -115,7 +116,7 @@ stages:
       size: 7512
     params:
       c.yaml:
-        apps.app: 473.astar-s0.txt.xz
+        apps.app: 473.astar-s1.txt.xz
         hardware:
           block-bits: 6
           total-bits: 64
@@ -215,7 +216,7 @@ stages:
       size: 7427
     params:
       c.yaml:
-        apps.app: 473.astar-s0.txt.xz
+        apps.app: 473.astar-s1.txt.xz
         hardware:
           block-bits: 6
           total-bits: 64

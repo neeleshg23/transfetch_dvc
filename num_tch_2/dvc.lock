@@ -77,6 +77,7 @@ stages:
     - path: src/train_tch.py
       md5: a161e458ba6188c44f884774ba87052f
       size: 5316
+      isexec: true
     params:
       d.yaml:
         hardware:

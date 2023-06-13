@@ -40,6 +40,7 @@ def train(ep, train_loader, model_save_path):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         student_preds = model(data)
+        print(data)
         
         with torch.no_grad():
             teacher_preds = teacher_model(data)
@@ -126,7 +127,7 @@ def main():
     global alpha
     global Temperature
 
-    params = dvc.api.params_show("c.yaml")
+    params = dvc.api.params_show()
 
     stu_option = params["student"]["model"]
     tch_option = params["teacher"]["model"]

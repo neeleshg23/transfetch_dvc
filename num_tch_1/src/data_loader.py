@@ -6,7 +6,8 @@ import dvc.api
 
 
 ## Potential Issues, Channels value is hardcoded in as 1 since DenseNet teacher model has 1 channel
-params = dvc.api.params_show("c.yaml")
+params = dvc.api.params_show()
+print(params)
 
 channels = params["model"]["tch_d"]["channels"]
 image_size = (params["hardware"]["look-back"]+1, params["hardware"]["block-num-bits"]//params["hardware"]["split-bits"]+1)

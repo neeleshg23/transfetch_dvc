@@ -162,7 +162,7 @@ def preprocessing(data, hardware):
 
 
 def main():
-    params = dvc.api.params_show("c.yaml")
+    params = dvc.api.params_show()
 
     trace_dir = params["system"]["traces"]
     processed_dir = params["system"]["processed"]

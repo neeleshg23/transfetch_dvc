@@ -136,7 +136,7 @@ def main():
     global device
     global BITMAP_SIZE
     
-    params = dvc.api.params_show("c.yaml")
+    params = dvc.api.params_show()
 
     option = params["teacher"]["model"]
     num_tch = params["teacher"]["number"]

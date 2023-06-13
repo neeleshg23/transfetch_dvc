@@ -1,19 +1,16 @@
 stages:
   preprocess:
     cmd: python src/preprocess.py
-    vars:
-      - c.yaml
     deps:
       - ${system.traces}/${apps.app}
       - src/preprocess.py
       - src/data_loader.py
     params:
-      - c.yaml:
-        - system
-        - apps.app
-        - teacher.number
-        - trace-data
-        - hardware
+      - system
+      - apps.app
+      - teacher.number
+      - trace-data
+      - hardware
     outs:
       - processed/train_loader_1
       - processed/test_loader_1
@@ -21,19 +18,16 @@ stages:
   
   train-tch-1:
     cmd: python src/train_tch.py
-    vars:
-      - c.yaml
     deps:
       - processed/train_loader_1
       - processed/test_loader_1
       - src/train_tch.py
     params:
-      - c.yaml:
-        - teacher.model
-        - model.tch_${teacher.model}
-        - system
-        - hardware
-        - train
+      - teacher.model
+      - model.tch_${teacher.model}
+      - system
+      - hardware
+      - train
     metrics:
       - res/plots/metrics/train_tch_1/test_loss.tsv:
           cache: false
@@ -44,42 +38,35 @@ stages:
 
   validate-tch-1:
     cmd: python src/validate_tch.py
-    vars:
-      - c.yaml
     deps:
       - processed/test_loader_1
       - processed/test_df_1
       - model/teacher_1.pth
       - src/validate_tch.py
     params:
-      - c.yaml:
-        - teacher
-        - model.tch_${teacher.model}
-        - apps.app
-        - system
-        - hardware
+      - teacher
+      - model.tch_${teacher.model}
+      - apps.app
+      - system
+      - hardware
     metrics:
       - res/teacher_1.json:
           cache: false
-
   train-stu:
     cmd: python src/train_stu.py
-    vars:
-      - c.yaml
     deps:
       - model/teacher_1.pth
       - processed/train_loader_1
       - processed/test_loader_1
       - src/train_stu.py
     params:
-      - c.yaml:
-        - student.model
-        - model.stu_${student.model}
-        - teacher.model
-        - model.tch_${teacher.model}
-        - system
-        - hardware
-        - train
+      - student.model
+      - model.stu_${student.model}
+      - teacher.model
+      - model.tch_${teacher.model}
+      - system
+      - hardware
+      - train
     metrics:
       - res/plots/metrics/train_stu/test_loss.tsv:
           cache: false
@@ -90,20 +77,17 @@ stages:
 
   validate-stu:
     cmd: python src/validate_stu.py
-    vars: 
-      - c.yaml
     deps:
       - processed/test_loader_1
       - processed/test_df_1
       - model/student.pth
       - src/validate_stu.py
     params:
-      - c.yaml:
-        - student
-        - model.stu_${student.model}
-        - apps.app
-        - system
-        - hardware
+      - student
+      - model.stu_${student.model}
+      - apps.app
+      - system
+      - hardware
     metrics:
       - res/student.json:
           cache: false

@@ -127,7 +127,7 @@ def main():
     global alpha
     global Temperature
 
-    params = dvc.api.params_show()
+    params = dvc.api.params_show("../params.yaml")
 
     stu_option = params["student"]["model"]
     tch_option = params["teacher"]["model"]

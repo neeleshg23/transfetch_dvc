@@ -95,7 +95,7 @@ def main():
     global optimizer
     global scheduler
 
-    params = dvc.api.params_show()
+    params = dvc.api.params_show("../params.yaml")
 
     option = params["teacher"]["model"]
 

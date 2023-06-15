@@ -132,6 +132,7 @@ def preprocessing(data, hardware):
     df['past_ip']=df.apply(lambda x: ip_list_norm(x['past_ip_abs'],16),axis=1)
     df['past_page']=df.apply(lambda x: page_list_norm(x['past_page_abs'],x['page_address']),axis=1)
     
+    # Create df[past address] (10)
     #labels
     '''
     future_idx: delta to the prior addr

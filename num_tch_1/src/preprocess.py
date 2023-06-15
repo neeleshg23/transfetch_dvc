@@ -110,11 +110,14 @@ def preprocessing(data, hardware):
     
     # past
     for i in range(LOOK_BACK):
+        df['block_addr_past_%d'%(i+1)]=df['block_address'].shift(periods=(i+1))
         df['patch_past_%d'%(i+1)]=df['patch'].shift(periods=(i+1))
         df['ip_past_%d'%(i+1)]=df['ip'].shift(periods=(i+1))
         df['page_past_%d'%(i+1)]=df['page_address'].shift(periods=(i+1))
     
     #Pem, update, debug 2019/09/18
+    past_block_addr=['block_addr_past_%d'%(i) for i in range(LOOK_BACK,0,-1)]
+    print('past block addr list', past_block_addr)
     past_name=['patch_past_%d'%(i) for i in range(LOOK_BACK,0,-1)]
     past_ip_name=['ip_past_%d'%(i) for i in range(LOOK_BACK,0,-1)]
     past_page_name=['page_past_%d'%(i) for i in range(LOOK_BACK,0,-1)]
@@ -124,11 +127,17 @@ def preprocessing(data, hardware):
     #Pem, update done
     
     df["past"]=df[past_name].values.tolist()
+    df['past_block_addr_abs']=df[past_block_addr].values.tolist()
     df["past_ip_abs"]=df[past_ip_name].values.tolist()
     df["past_page_abs"]=df[past_page_name].values.tolist()
+    print('past block addr abs', df['past_block_addr_abs'])
+
     
     df=df.dropna()
-    
+
+    df['past_block_addr'] = df.apply(lambda x: [item for item in x['past_block_addr_abs'] if pd.notnull(item)], axis=1)
+    df = df.reindex(columns=['id', 'cycle', 'addr', 'ip', 'hit', 'raw', 'block_address', 'page_address', 'page_offset', 'block_index', 'block_addr_delta', 'patch', 'past', 'past_block_addr', 'past_ip', 'past_page', 'future', 'past_block_addr_abs', 'past_ip_abs', 'past_page_abs'])
+
     df['past_ip']=df.apply(lambda x: ip_list_norm(x['past_ip_abs'],16),axis=1)
     df['past_page']=df.apply(lambda x: page_list_norm(x['past_page_abs'],x['page_address']),axis=1)
     
@@ -158,11 +167,11 @@ def preprocessing(data, hardware):
     
     return df[['id', 'cycle', 'addr', 'ip', 'hit', 'raw', 'block_address',
        'page_address', 'page_offset', 'block_index', 'block_addr_delta',
-       'patch','past','past_ip','past_page','future']]
+       'patch','past','past_block_addr','past_ip','past_page','future']]
 
 
 def main():
-    params = dvc.api.params_show()
+    params = dvc.api.params_show("../params.yaml")
 
     trace_dir = params["system"]["traces"]
     processed_dir = params["system"]["processed"]
